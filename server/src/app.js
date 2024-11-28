@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/users', userRoutes);
 
+
 // Test route
 app.get('/', (req, res) => {
     res.send('API Running');
