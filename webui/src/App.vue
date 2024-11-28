@@ -1,4 +1,3 @@
-
 <template>
   <Navbar/>
   <HomePage msg="Accueil"/>
@@ -18,6 +17,7 @@ export default {
   }
 }
 </script>
+
 
 <style>
 #app {
