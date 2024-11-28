@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 
 import userRoutes from './routes/userRoutes.js';
 import taskRoutes from './routes/taskRoute.js';
+import roleRoutes from './routes/roleRoute.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/roles', roleRoutes);
 
 // Test route
 app.get('/', (req, res) => {
