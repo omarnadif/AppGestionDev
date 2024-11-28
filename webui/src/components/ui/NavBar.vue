@@ -4,7 +4,7 @@
       <a class="sm:order-1 flex-none text-xl font-semibold focus:outline-none focus:opacity-80" href="/">Brand</a>
       <div class="sm:order-3 flex items-center gap-x-2">
         <div class="mt-3 text-center md:text-start md:flex md:justify-end md:items-center">
-          <a class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" href="/projects">
+          <a class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" href="/login">
             Connexion
           </a>
         </div>

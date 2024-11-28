@@ -5,6 +5,7 @@ import ProjectList from '@/views/ProjectList.vue'
 import ProjectDetails from '@/views/ProjectDetails.vue'
 import TaskList from '@/views/TaskList.vue'
 import UserProfile from '@/views/UserProfile.vue'
+import LoginPage from '@/views/LoginPage.vue'
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
     path: '/tasks',
     name: 'TaskList',
     component: TaskList
+  },
+  {
+    path: '/login',
+    name: 'LoginPage',
+    component: LoginPage
   },
   {
     path: '/profile',
