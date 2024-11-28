@@ -54,7 +54,7 @@ const fetchProjects = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await fetch('http://localhost:5000/api/projects')
+    const response = await fetch('http://localhost:5000/api/project')
     if (!response.ok) {
       throw new Error('Erreur lors du chargement des projets')
     }
