@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
 import userRoutes from './routes/userRoutes.js';
+import taskRoutes from './routes/taskRoute.js';
+import roleRoutes from './routes/roleRoute.js';
 import projectRoutes from './routes/projectRoutes.js';
 
 dotenv.config();
@@ -15,8 +17,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/project', projectRoutes);
 
 
 // Test route

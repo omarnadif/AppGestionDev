@@ -3,7 +3,7 @@ import UserModel from '../models/userModel.js';
 class UserController {
     static async getUsers(req, res) {
         try {
-            const users = await UserModel.getAllUsers();
+            const users = await UserModel.getAllUser();
             console.log(users);
             res.status(200).json(users);
         } catch (error) {
