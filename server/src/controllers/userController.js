@@ -20,6 +20,37 @@ class UserController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    static async getUserById(req, res) {
+        try {
+            const userId = req.params.id;
+            const user = await UserModel.getUserById(userId);
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async deleteUser(req, res) {
+        try {
+            const userId = req.params.id;
+            await UserModel.deleteUser(userId);
+            res.status(204).end();
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async updateUser(req, res) {
+        try {
+            const userId = req.params.id;
+            const userData = req.body;
+            await UserModel.updateUser(userId, userData);
+            res.status(204).end();
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 export default UserController;

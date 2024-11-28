@@ -12,6 +12,24 @@ class UserModel {
         if (error) throw new Error(error.message);
         return data;
     }
+
+    static async getUserById(userId) {
+        const { data, error } = await supabase.from('Users').select('*').eq('id', userId); // Utiliser supabase pour sélectionner des données
+        if (error) throw new Error(error.message);
+        return data;
+    }
+
+    static async deleteUser(userId) {
+        const { data, error } = await supabase.from('Users').delete().eq('id', userId); // Utiliser supabase pour supprimer des données
+        if (error) throw new Error(error.message);
+        return data;
+    }
+
+    static async updateUser(userId, userData) {
+        const { data, error } = await supabase.from('Users').update(userData).eq('id', userId); // Utiliser supabase pour mettre à jour des données
+        if (error) throw new Error(error.message);
+        return data;
+    }
 }
 
 export default UserModel;
