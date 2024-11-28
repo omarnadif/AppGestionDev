@@ -1,23 +1,21 @@
-<script setup>
-import { RouterView, RouterLink } from 'vue-router';
+<template>
+  <Navbar/>
+  <RouterView />
+</template>
+
+<script>
+import Navbar from './components/ui/NavBar.vue'
+import './assets/main.css'
+import 'preline/dist/preline.js';
+
+export default {
+  name: 'App',
+  components: {
+    Navbar
+  }
+}
 </script>
 
-<template>
-  <div id="app">
-    <header>
-      <nav class="nav-bar">
-        <RouterLink to="/" class="nav-link">Accueil</RouterLink>
-        <RouterLink to="/projects" class="nav-link">Projets</RouterLink>
-        <RouterLink to="/tasks" class="nav-link">Tâches</RouterLink>
-        <RouterLink to="/profile" class="nav-link">Profil</RouterLink>
-      </nav>
-    </header>
-
-    <main class="main-content">
-      <RouterView />
-    </main>
-  </div>
-</template>
 
 <style>
 #app {
@@ -28,28 +26,6 @@ import { RouterView, RouterLink } from 'vue-router';
   color: #2c3e50;
 }
 
-.nav-bar {
-  background-color: #2c3e50;
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.nav-link:hover,
-.router-link-active {
-  background-color: #34495e;
-}
 
 .main-content {
   max-width: 1200px;
@@ -57,7 +33,6 @@ import { RouterView, RouterLink } from 'vue-router';
   padding: 0 20px;
 }
 
-/* Styles globaux */
 .form-group {
   margin-bottom: 15px;
   text-align: left;
@@ -90,7 +65,6 @@ button:hover {
   background-color: #3aa876;
 }
 
-/* Classes utilitaires */
 .card {
   background: white;
   border-radius: 8px;
@@ -117,7 +91,6 @@ button:hover {
   align-items: center;
 }
 
-/* Animation de transitions */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
