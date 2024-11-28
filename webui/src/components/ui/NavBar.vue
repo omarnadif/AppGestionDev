@@ -16,11 +16,15 @@
       </div>
       <div id="hs-navbar-alignment" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:grow-0 sm:basis-auto sm:block sm:order-2" aria-labelledby="hs-navbar-alignment-collapse">
         <div class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:mt-0 sm:ps-5">
-          <a class="font-medium hover:opacity-80 focus:outline-none" href="#">Accueil</a>
-          <a class="font-medium hover:opacity-80 focus:outline-none" href="#">Planification</a>
-<!--          <a class="font-medium hover:opacity-80 focus:outline-none" href="#">Blog</a>-->
+            <RouterLink to="/projects" class="font-medium hover:opacity-80 focus:outline-none">Projets</RouterLink>
+            <RouterLink to="/tasks" class="font-medium hover:opacity-80 focus:outline-none">Tâches</RouterLink>
+            <RouterLink to="/profile" class="font-medium hover:opacity-80 focus:outline-none">Profil</RouterLink>
         </div>
       </div>
     </nav>
   </header>
 </template>
+
+<script>
+import { RouterView, RouterLink } from 'vue-router';
+</script>
