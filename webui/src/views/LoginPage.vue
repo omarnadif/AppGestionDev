@@ -1,80 +1,115 @@
 <template>
-  <div class="flex items-center justify-center  ">
-    <!-- Form Section -->
-    <div class="max-w-lg w-full bg-gray-100 rounded-lg shadow-lg p-8">
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Inscrivez-vous ici</h1>
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <!-- Form Container -->
+    <div class="max-w-md w-full relative">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center mb-2">
+          <svg class="w-10 h-10 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
+          </svg>
+          <span class="text-cyan-500 font-semibold tracking-wider ml-2">PROGEST</span>
+        </div>
+        <h1 class="text-3xl font-bold text-white mb-2">Connexion</h1>
+        <p class="text-slate-400">Accédez à votre espace de gestion</p>
       </div>
-      <form>
-        <!-- Prénom -->
-        <div class="mb-4">
-          <label for="prenom" class="block text-sm font-medium text-gray-700">Prénom</label>
-          <input
-              type="text"
-              id="prenom"
-              placeholder="Jean"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
 
-        <!-- Nom -->
-        <div class="mb-4">
-          <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
-          <input
-              type="text"
-              id="nom"
-              placeholder="Dupont"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <!-- Numéro -->
-        <div class="mb-4">
-          <label for="numero" class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
-          <input
-              type="tel"
-              id="numero"
-              placeholder="06 12 34 56 78"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <!-- Email -->
-        <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700">Adresse email</label>
-          <input
+      <!-- Form Card -->
+      <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-8 shadow-xl">
+        <form @submit.prevent="handleLogin">
+          <!-- Email -->
+          <div class="mb-6">
+            <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+            <input
               type="email"
               id="email"
+              v-model="formData.email"
               placeholder="vous@email.com"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+              class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500
+                focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+              required
+            />
+          </div>
 
-        <!-- Mot de passe -->
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-          <input
+          <!-- Password -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <label for="password" class="text-sm font-medium text-slate-300">Mot de passe</label>
+              <a href="#" class="text-sm text-cyan-500 hover:text-cyan-400">Mot de passe oublié ?</a>
+            </div>
+            <input
               type="password"
               id="password"
-              placeholder="********"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+              v-model="formData.password"
+              placeholder="••••••••"
+              class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500
+                focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+              required
+            />
+          </div>
 
-        <!-- Submit Button -->
-        <div>
+          <!-- Remember Me -->
+          <div class="mb-6 flex items-center">
+            <input
+              type="checkbox"
+              id="remember"
+              v-model="formData.remember"
+              class="w-4 h-4 border-slate-700 rounded bg-slate-900/50 text-cyan-500 focus:ring-cyan-500/20"
+            />
+            <label for="remember" class="ml-2 text-sm text-slate-300">Se souvenir de moi</label>
+          </div>
+
+          <!-- Submit Button -->
           <button
-              type="submit"
-              class="w-full mt-4 bg-blue-600 text-white py-3 px-4 rounded-lg shadow hover:bg-blue-700 focus:ring-4 focus:ring-blue-500 focus:outline-none"
+            type="submit"
+            class="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg font-semibold
+              hover:from-cyan-600 hover:to-cyan-700 focus:ring-4 focus:ring-cyan-500/30 focus:outline-none
+              transition-all duration-200 flex items-center justify-center group"
           >
-            S'inscrire
+            Se connecter
+            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" />
+            </svg>
           </button>
-        </div>
-      </form>
+
+          <!-- Register Link -->
+          <div class="text-center text-slate-400 mt-6">
+            Pas encore de compte ?
+            <a href="#" class="text-cyan-500 hover:text-cyan-400 font-medium">Inscrivez-vous</a>
+          </div>
+        </form>
+      </div>
     </div>
-    <!-- End Form Section -->
+
+    <!-- Background Elements -->
+    <div class="absolute top-0 left-0 w-full h-full -z-10" aria-hidden="true">
+      <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full filter blur-3xl"></div>
+      <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full filter blur-3xl"></div>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script>
+import { reactive } from 'vue'
+
+export default {
+  name: 'LoginPage',
+  setup() {
+    const formData = reactive({
+      email: '',
+      password: '',
+      remember: false
+    })
+
+    const handleLogin = () => {
+      console.log('Form submitted:', formData)
+      // Ajoutez ici votre logique de connexion
+    }
+
+    return {
+      formData,
+      handleLogin
+    }
+  }
+}
 </script>
