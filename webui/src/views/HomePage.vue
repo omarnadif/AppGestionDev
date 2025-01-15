@@ -4,12 +4,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32 relative z-10">
       <div class="text-center mb-16">
         <!-- Logo -->
-        <div class="flex items-center justify-center mb-6">
-          <svg class="w-10 h-10 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
-          </svg>
-          <span class="text-cyan-500 font-semibold tracking-wider ml-2">PROGEST</span>
-        </div>
+<!--        <div class="flex items-center justify-center mb-6">-->
+<!--          <img src="/images/logo.png" alt="Logo" class="w-6 h-6 object-contain" />-->
+<!--          <span class="text-white font-semibold tracking-wider">TaskFlow</span>-->
+<!--        </div>-->
         
         <!-- Hero Title -->
         <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
