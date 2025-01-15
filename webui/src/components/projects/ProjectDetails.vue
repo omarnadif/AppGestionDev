@@ -110,8 +110,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import TaskForm from '@/components/TaskForm.vue'
-import TaskList from '@/components/TaskList.vue'
+import TaskForm from '@/components/tasks/TaskForm.vue'
+import TaskList from '@/views/TaskPage.vue'
 
 const route = useRoute()
 const project = ref(null)

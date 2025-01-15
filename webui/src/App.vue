@@ -5,7 +5,7 @@
 
 <script>
 import Navbar from './components/ui/NavBar.vue'
-import './assets/main.css'
+import './assets/styles/main.css'
 import 'preline/dist/preline.js';
 
 export default {

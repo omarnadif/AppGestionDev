@@ -114,8 +114,9 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import TaskItem from './TaskItem.vue';
-import TaskForm from './TaskForm.vue';
+import TaskItem from '@/components/tasks/TaskItem.vue'
+import TaskForm from '@/components/tasks/TaskForm.vue'
+
 
 const tasks = ref([]);
 const statusFilter = ref('tous');

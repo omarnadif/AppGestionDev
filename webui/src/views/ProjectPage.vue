@@ -106,7 +106,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import ProjectForm from '@/components/ProjectForm.vue'
+import ProjectForm from '@/components/projects/ProjectForm.vue'
 
 const showNewProjectForm = ref(false)
 const projects = ref([])
