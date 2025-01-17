@@ -9,5 +9,7 @@ router.post("/", authMiddleware,ProjectController.createProject);
 router.get("/:id", authMiddleware,ProjectController.getProjectById);
 router.delete("/:id", authMiddleware,ProjectController.deleteProject);
 router.put("/:id", authMiddleware,ProjectController.updateProject);
+router.get("/:id/tasks", authMiddleware,ProjectController.getTasksByProjectId);
+router.post("/:id/tasks", authMiddleware,ProjectController.createTaskForProject);
 
 export default router;

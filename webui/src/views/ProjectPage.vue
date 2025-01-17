@@ -76,7 +76,7 @@
           <!-- Project Actions -->
           <div class="flex items-center gap-3">
             <router-link 
-              :to="`/projects/${project.id}`"
+              :to="`/project/${project.id}`"
               class="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg font-medium
                 hover:from-cyan-600 hover:to-cyan-700 transition-all duration-200 text-center"
             >
@@ -184,7 +184,7 @@ const addProject = async (project) => {
 const deleteProject = async (id) => {
   if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
     try {
-      const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const response = await fetch(`http://localhost:5000/api/project/${id}`, {
         method: 'DELETE'
       })
 
