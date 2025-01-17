@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import taskRoutes from './routes/taskRoute.js';
 import roleRoutes from './routes/roleRoute.js';
 import projectRoutes from './routes/projectRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/project', projectRoutes);
+app.use('/api/auth', authRoutes);
 
 
 // Test route

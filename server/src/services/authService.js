@@ -1,35 +1,56 @@
 // services/authService.js
-import { supabase } from '../utils/supabaseClient'
-import { joseUtils } from '../utils/joseUtils'
-import { UserModel } from '../models/userModel'
+import supabase from '../db/connect.js'
+import { joseUtils } from '../utils/jwt.js'
+import UserModel from '../models/userModel.js'
+import bcrypt from 'bcrypt'
 export const authService = {
   // Inscription
-  async signUp(email, password) {
+  async signUp(email, password, firstname, lastname, phone) {
     try {
-      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      })
-      
-      if (signUpError) throw signUpError
+      // Vérifier si l'email existe déjà
+      const { data: existingUser } = await supabase
+        .from('t_user')
+        .select('email')
+        .eq('email', email)
+        .single()
 
-      // Créer le payload du token
-      const payload = {
-        userId: user.id,
-        email: user.email,
-        role: 'user'
+      if (existingUser) {
+        throw new Error('Cet email est déjà utilisé')
       }
 
-      // Créer un nouvel utilisateur dans la base de données
-      const newUser = await UserModel.createUser(user.id, user.email)
+      // Hasher le mot de passe
+      const hashedPassword = await bcrypt.hash(password, 10)
 
-      // Générer le token avec JOSE
-      const token = await joseUtils.generateToken(payload)
-      
+      // Créer l'utilisateur dans votre table client
+      const { data: newUser, error } = await supabase
+        .from('t_user')
+        .insert([
+          {
+            email,
+            password_hash: hashedPassword,
+            firstname,
+            lastname,
+            phone
+          }
+        ])
+        .select()
+        .single()
+
+      if (error) throw error
+
+      // Générer le JWT
+      const token = await joseUtils.generateToken({
+        userId: newUser.id,
+        email: newUser.email,
+        role: 'client'
+      })
+
+      // On ne renvoie pas le hash du mot de passe
+      const { password: _, ...userWithoutPassword } = newUser
+
       return {
-        user,
-        token,
-        newUser
+        user: userWithoutPassword,
+        token
       }
     } catch (error) {
       throw error

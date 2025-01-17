@@ -30,6 +30,12 @@ class UserModel {
         if (error) throw new Error(error.message);
         return data;
     }
+
+    static async findByEmail(email) {
+        const { data, error } = await supabase.from('t_user').select('*').eq('email', email);
+        if (error) throw new Error(error.message);
+        return data[0];
+    }
 }
 
 export default UserModel;
