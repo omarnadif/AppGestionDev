@@ -169,7 +169,6 @@ const uploadAvatar = async (event) => {
     if (response.ok) {
       // Mettre à jour l'URL de l'avatar dans le profil
       profile.value.avatar = result.avatarUrl;
-      alert('Avatar mis à jour avec succès !');
     } else {
       alert(`Erreur : ${result.error || 'Une erreur est survenue'}`);
     }
