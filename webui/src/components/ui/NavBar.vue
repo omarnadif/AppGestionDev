@@ -165,11 +165,13 @@
 
 <script setup>
   import { ref } from 'vue'
-  // import { useCookies } from 'vue-cookie'
+  import { getTokenFromCookie } from '../../utils/utils.js'
 
   const isMenuOpen = ref(false)
-  const isAuthenticated = ref(false)
-  // const cookies = useCookies()
+
+  const token = getTokenFromCookie();
+  const isAuthenticated = ref(!!token);
+  
 
   const navigationItems = [
     { name: 'Projets', path: '/projects' },
@@ -177,27 +179,22 @@
     { name: 'Profil', path: '/profile' }
   ]
 
-  // const checkAuthentication = () => {
-  //   isAuthenticated.value = !!cookies.get('token') // Vérifie si le cookie `token` existe
-  // }
 
-  // const logout = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:5000/api/auth/logout', {
-  //       method: 'POST',
-  //       credentials: 'include', // Pour inclure les cookies
-  //     })
-  //     if (!response.ok) {
-  //       throw new Error('Erreur lors de la déconnexion')
-  //     }
-  //     cookies.remove('token') // Supprime le cookie côté client
-  //     isAuthenticated.value = false
-  //     window.location.href = '/login' // Redirige vers la page de connexion
-  //   } catch (e) {
-  //     console.error(e.message)
-  //   }
-  // }
+  const logout = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Pour inclure les cookies
+      })
+      if (!response.ok) {
+        throw new Error('Erreur lors de la déconnexion')
+      }
+      isAuthenticated.value = false
+      window.location.href = '/login' // Redirige vers la page de connexion
+    } catch (e) {
+      console.error(e.message)
+    }
+  }
 
-  // onMounted(checkAuthentication)
 
 </script>
