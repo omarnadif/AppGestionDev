@@ -53,8 +53,9 @@
                 <input 
                   v-model="profile.email"
                   type="email"
-                  class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-lg text-white
+                  class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-lg text-gray-400
                     focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+                  disabled
                 />
               </div>
 
@@ -157,22 +158,109 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 
-const profile = ref({
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  phone: '0123456789'
+// Configuration des références réactives
+const profile = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: ''
 })
 
 const userStats = ref({
-  activeProjects: 3,
-  ongoingTasks: 5,
-  completedTasks: 12
+  activeProjects: 0,
+  ongoingTasks: 0,
+  completedTasks: 0
 })
 
-const saveProfile = () => {
-  alert('Profil mis à jour avec succès!')
+const isLoading = ref(false)
+const errorMessage = ref('')
+
+
+// Extraction du token depuis les cookies
+const getTokenFromCookie = () => {
+  const cookieToken = document.cookie.match('(^|;)\\s*token\\s*=\\s*([^;]*)')
+  return cookieToken ? cookieToken.pop() : null
 }
+
+// Gestion centralisée des requêtes API
+const apiRequest = async (url, method = 'GET', body = null) => {
+  const token = getTokenFromCookie()
+
+  if (!token) {
+    throw new Error('Token non trouvé')
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  }
+
+  const config = {
+    method,
+    headers,
+    ...(body && { body: JSON.stringify(body) })
+  }
+
+  const response = await fetch(url, config)
+
+  if (!response.ok) {
+    throw new Error(`Erreur: ${method === 'GET' ? 'récupération' : 'mise à jour'} des données`)
+  }
+
+  return response.json()
+}
+
+// Récupération du profil utilisateur
+const fetchUserProfile = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    const userData = await apiRequest('http://localhost:5000/api/user/me')
+
+    // Mise à jour directe des valeurs
+    profile.firstName = userData.firstname || ''
+    profile.lastName = userData.lastname || ''
+    profile.email = userData.email || ''
+    profile.phone = userData.phone || ''
+  } catch (error) {
+    console.error('Erreur de profil:', error.message)
+    errorMessage.value = 'Impossible de charger le profil'
+
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Sauvegarde des modifications du profil
+const saveProfile = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    const updatedUser = await apiRequest('http://localhost:5000/api/user/me', 'PUT', {
+      firstname: profile.firstName,
+      lastname: profile.lastName,
+      phone: profile.phone
+    })
+
+    // Mise à jour directe des valeurs
+    profile.firstName = updatedUser.firstname || profile.firstName
+    profile.lastName = updatedUser.lastname || profile.lastName
+    profile.phone = updatedUser.phone || profile.phone
+
+    // Notification de succès
+    alert('Profil mis à jour avec succès !')
+  } catch (error) {
+    console.error('Erreur de mise à jour:', error.message)
+    errorMessage.value = 'Impossible de mettre à jour le profil'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Initialisation au montage du composant
+onMounted(fetchUserProfile)
 </script>
