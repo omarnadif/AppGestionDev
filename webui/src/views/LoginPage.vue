@@ -185,15 +185,41 @@ const signUp = async (formData) => {
   }
 }
 
+const login = async (formData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      })
+    })
+    if (!response.ok) {
+      throw new Error('Erreur lors de la connexion')
+    }
+    console.log('Connexion réussie !')
+    const data = await response.json()
+    document.cookie = `token=${data.token}`
+    window.location.href = '/projects';
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 const handleSubmit = async () => {
   if (isLogin.value) {
     // Soumission du formulaire de connexion
-    console.log('Login form submitted:', {
-      email: formData.email,
-      password: formData.password,
-      remember: formData.remember
-    });
+    try {
+      await login(formData)
+      console.log('Connexion réussie !')
+    } catch (e) {
+      console.error("Erreur lors de la connexion :", e)
+    }
+
   } else {
     // Vérification des champs pour l'inscription
     if (formData.password !== formData.confirmPassword) {

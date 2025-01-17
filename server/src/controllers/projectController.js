@@ -3,6 +3,7 @@ import projectModel from '../models/projectModel.js';
 class ProjectController {
     static async getProjects(req, res) {
         try {
+            console.log('getProjects');
             const projects = await projectModel.getAllProject();
             res.status(200).json(projects);
         } catch (error) {

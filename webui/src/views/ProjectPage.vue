@@ -114,22 +114,44 @@ const loading = ref(true)
 const error = ref(null)
 
 // Fonction pour charger les projets depuis l'API
-const fetchProjects = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    const response = await fetch('http://localhost:5000/api/project')
-    if (!response.ok) {
-      throw new Error('Erreur lors du chargement des projets')
-    }
-    projects.value = await response.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
+// Fonction pour récupérer le token depuis les cookies
+const getTokenFromCookie = () => {
+  const cookies = document.cookie.split('; ');
+  const token = cookies.find(cookie => cookie.startsWith('token='));
+  return token ? token.split('=')[1] : null;
+};
 
+const fetchProjects = async () => {
+  console.log("fetchProjects")
+  try {
+    loading.value = true;
+    error.value = null;
+
+    const token = getTokenFromCookie();
+    console.log(token)
+    if (!token) {
+      throw new Error('Token introuvable. Veuillez vous connecter.');
+    }
+
+    const response = await fetch(`http://localhost:5000/api/project/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors du chargement des projets');
+    }
+    console.log("response", response)
+
+    projects.value = await response.json();
+  } catch (e) {
+    error.value = e.message;
+  } finally {
+    loading.value = false;
+  }
+};
 // Fonction pour ajouter un nouveau projet
 const addProject = async (project) => {
   try {
