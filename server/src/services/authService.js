@@ -94,6 +94,7 @@ export const authService = {
     }
   },
 
+
   // Rafraîchir le token
   async refreshToken(oldToken) {
     try {
@@ -109,5 +110,5 @@ export const authService = {
     } catch (error) {
       throw new Error('Impossible de rafraîchir le token')
     }
-  }
+  }  
 }
