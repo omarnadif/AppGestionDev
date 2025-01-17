@@ -1,18 +1,30 @@
-import supabase from '../db/connect.js'; // Importer l'instance de Supabase
+import supabase from '../db/connect.js';
 
 class TaskModel {
+    /**
+     * Retrieves all tasks from the `t_task` table.
+     */
     static async getAllTasks() {
-        const { data, error } = await supabase.from('Tasks').select('*'); // Utiliser supabase pour interagir avec la table
-        if (error) throw new Error(error.message);
+        const { data, error } = await supabase.from('t_task').select('*');
+        if (error) {
+            console.error('Error fetching tasks:', error);
+            throw new Error('Database query error.');
+        }
         return data;
     }
 
+    /**
+     * Inserts a new task into the `t_task` table.
+     * @param {Object} taskData - Task data to insert.
+     */
     static async createTask(taskData) {
-        const { data, error } = await supabase.from('Tasks').insert([taskData]); // Utiliser supabase pour insérer des données
-        if (error) throw new Error(error.message);
+        const { data, error } = await supabase.from('t_task').insert([taskData]);
+        if (error) {
+            console.error('Error creating task:', error);
+            throw new Error('Database insert error.');
+        }
         return data;
     }
 }
 
 export default TaskModel;
-

@@ -44,34 +44,34 @@
       </div>
 
       <!-- Projects Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="project in projects" :key="project.id" 
-          class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 shadow-xl
-            hover:border-cyan-500/50 transition-all duration-300 group">
-          
-          <!-- Project Header -->
-          <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-cyan-500 transition-colors">
-            {{ project.Name }}
-          </h3>
-          
-          <!-- Project Description -->
-          <p class="text-slate-400 mb-4 line-clamp-2">{{ project.Description }}</p>
-          
-          <!-- Project Dates -->
-          <div class="space-y-2 mb-6">
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Début: {{ formatDate(project.Start_date) }}</span>
-            </div>
-            <div class="flex items-center text-sm text-slate-500">
-              <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Fin: {{ formatDate(project.End_date) }}</span>
-            </div>
-          </div>
+<div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div v-for="project in projects" :key="project.id" 
+    class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 shadow-xl
+      hover:border-cyan-500/50 transition-all duration-300 group">
+    
+    <!-- Project Header -->
+    <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-cyan-500 transition-colors">
+      {{ project.name }}
+    </h3>
+    
+    <!-- Project Description -->
+    <p class="text-slate-400 mb-4 line-clamp-2">{{ project.description }}</p>
+    
+    <!-- Project Dates -->
+    <div class="space-y-2 mb-6">
+      <div class="flex items-center text-sm text-slate-500">
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span>Début: {{ formatDate(project.start_date) }}</span>
+      </div>
+      <div class="flex items-center text-sm text-slate-500">
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span>Fin: {{ formatDate(project.end_date) }}</span>
+      </div>
+    </div>
 
           <!-- Project Actions -->
           <div class="flex items-center gap-3">
@@ -133,17 +133,17 @@ const fetchProjects = async () => {
 // Fonction pour ajouter un nouveau projet
 const addProject = async (project) => {
   try {
-    const response = await fetch('http://localhost:5000/api/projects', {
+    const response = await fetch('http://localhost:5000/api/project', { // Corriger l'URL aussi
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        Name: project.name,
-        Description: project.description,
-        Start_date: project.startDate,
-        End_date: project.endDate,
-        Responsible_id: project.responsibleId
+        name: project.name,
+        description: project.description,
+        start_date: project.startDate,
+        end_date: project.endDate,
+        responsible_id: project.responsibleId
       })
     })
 
