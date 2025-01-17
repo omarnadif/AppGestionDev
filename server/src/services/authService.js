@@ -110,5 +110,5 @@ export const authService = {
     } catch (error) {
       throw new Error('Impossible de rafraîchir le token')
     }
-  }
+  }  
 }
