@@ -13,32 +13,32 @@
     <div class="space-y-6">
       <!-- Projet -->
       <div class="space-y-2">
-        <label for="project" class="block text-sm font-medium text-slate-400">
-          Projet
-        </label>
-        <div class="relative">
-          <select
-            id="project"
-            v-model="projectId"
-            required
-            :disabled="loading"
-            class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-lg text-white
-              focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200
-              appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="" disabled selected class="bg-slate-800">Sélectionner un projet</option>
-            <option v-for="project in props.projects" :key="project.id" :value="project.id" class="bg-slate-800">
-  {{ project.name }}
-</option>
-          </select>
-          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-            <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
+    <label for="project" class="block text-sm font-medium text-slate-400">
+      Projet
+    </label>
+    <div class="relative">
+      <select
+        id="project"
+        v-model="projectId"
+        required
+        :disabled="loading || loadingProjects"
+        class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-lg text-white
+          focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200
+          appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <option value="" disabled selected class="bg-slate-800">Sélectionner un projet</option>
+        <option v-for="project in projects" :key="project.id" :value="project.id" class="bg-slate-800">
+          {{ project.name }}
+        </option>
+      </select>
+      <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+        <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
-
+    </div>
+    <div v-if="loadingProjects" class="text-sm text-cyan-500">Chargement des projets...</div>
+  </div>
       <!-- Titre -->
       <div class="space-y-2">
         <label for="title" class="block text-sm font-medium text-slate-400">
@@ -167,7 +167,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits, defineProps } from 'vue';
+import { ref, onMounted, defineEmits } from 'vue';
 
 const emit = defineEmits(['add-task', 'cancel']);
 
@@ -182,17 +182,10 @@ const endDate = ref('');
 // UI states
 const loading = ref(false);
 const loadingUsers = ref(false);
+const loadingProjects = ref(false);
 const error = ref(null);
 const users = ref([]);
-
-// Dans le <script setup> du TaskForm
-const props = defineProps({
-  projects: {
-    type: Array,
-    required: true,
-    default: () => []
-  }
-});
+const projects = ref([]); // Nouveau ref pour les projets
 
 const fetchUsers = async () => {
   try {
@@ -209,6 +202,22 @@ const fetchUsers = async () => {
   }
 };
 
+// Nouvelle fonction pour récupérer les projets
+const fetchProjects = async () => {
+  try {
+    loadingProjects.value = true;
+    error.value = null;
+    const response = await fetch('http://localhost:5000/api/project');
+    if (!response.ok) throw new Error('Erreur lors du chargement des projets');
+    projects.value = await response.json();
+  } catch (e) {
+    error.value = "Impossible de charger la liste des projets";
+    console.error(e);
+  } finally {
+    loadingProjects.value = false;
+  }
+};
+
 const submitTask = async () => {
   if (!title.value.trim() || !projectId.value || !assignedTo.value) {
     error.value = "Tous les champs requis doivent être remplis";
@@ -222,15 +231,15 @@ const submitTask = async () => {
     error.value = null;
 
     const taskData = {
-  name: title.value.trim(),
-  description: description.value?.trim() || '',
-  project_id: Number(projectId.value),
-  assigned_to: Number(assignedTo.value),
-  start_date: startDate.value,
-  end_date: endDate.value,
-  status: 'A faire',
-  completion_percentage: 0 
-};
+      name: title.value.trim(),
+      description: description.value?.trim() || '',
+      project_id: Number(projectId.value),
+      assigned_to: Number(assignedTo.value),
+      start_date: startDate.value,
+      end_date: endDate.value,
+      status: 'A faire',
+      completion_percentage: 0 
+    };
 
     const response = await fetch('http://localhost:5000/api/tasks', {
       method: 'POST',
@@ -263,6 +272,7 @@ const submitTask = async () => {
     loading.value = false;
   }
 };
+
 const validateDates = () => {
   if (!startDate.value || !endDate.value) {
     error.value = "Les dates sont requises";
@@ -287,5 +297,8 @@ const resetForm = () => {
   error.value = null;
 };
 
-onMounted(fetchUsers);
+// Chargement initial des données
+onMounted(async () => {
+  await Promise.all([fetchUsers(), fetchProjects()]);
+});
 </script>
