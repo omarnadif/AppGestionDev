@@ -61,8 +61,8 @@
 
         <!-- Auth Button -->
         <div class="hidden md:block">
-          <RouterLink
-            to="/login"
+          <button
+            @click="isAuthenticated ? logout() : (window.location.href = '/login')"
             class="relative inline-flex items-center gap-2 px-4 py-2 group"
           >
             <!-- Button Background -->
@@ -75,13 +75,15 @@
             
             <!-- Button Content -->
             <svg class="relative w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              <path v-if="!isAuthenticated" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              <path v-else d="M10 9v6m4-6v6m-7 8h10a3 3 0 003-3V5a3 3 0 00-3-3H7a3 3 0 00-3 3v14a3 3 0 003 3z" />
             </svg>
             <span class="relative text-sm font-semibold text-white">
-              Connexion
+              {{ isAuthenticated ? 'Se déconnecter' : 'Connexion' }}
             </span>
-          </RouterLink>
+          </button>
         </div>
+
 
         <!-- Mobile Menu Button -->
         <div class="md:hidden">
@@ -162,13 +164,40 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+  import { ref } from 'vue'
+  // import { useCookies } from 'vue-cookie'
 
-const isMenuOpen = ref(false)
+  const isMenuOpen = ref(false)
+  const isAuthenticated = ref(false)
+  // const cookies = useCookies()
 
-const navigationItems = [
-  { name: 'Projets', path: '/projects' },
-  { name: 'Tâches', path: '/tasks' },
-  { name: 'Profil', path: '/profile' }
-]
+  const navigationItems = [
+    { name: 'Projets', path: '/projects' },
+    { name: 'Tâches', path: '/tasks' },
+    { name: 'Profil', path: '/profile' }
+  ]
+
+  // const checkAuthentication = () => {
+  //   isAuthenticated.value = !!cookies.get('token') // Vérifie si le cookie `token` existe
+  // }
+
+  // const logout = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:5000/api/auth/logout', {
+  //       method: 'POST',
+  //       credentials: 'include', // Pour inclure les cookies
+  //     })
+  //     if (!response.ok) {
+  //       throw new Error('Erreur lors de la déconnexion')
+  //     }
+  //     cookies.remove('token') // Supprime le cookie côté client
+  //     isAuthenticated.value = false
+  //     window.location.href = '/login' // Redirige vers la page de connexion
+  //   } catch (e) {
+  //     console.error(e.message)
+  //   }
+  // }
+
+  // onMounted(checkAuthentication)
+
 </script>

@@ -107,6 +107,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import ProjectForm from '@/components/projects/ProjectForm.vue'
+import { getTokenFromCookie } from '../utils/utils.js'
 
 const showNewProjectForm = ref(false)
 const projects = ref([])
@@ -115,20 +116,14 @@ const error = ref(null)
 
 // Fonction pour charger les projets depuis l'API
 // Fonction pour récupérer le token depuis les cookies
-const getTokenFromCookie = () => {
-  const cookies = document.cookie.split('; ');
-  const token = cookies.find(cookie => cookie.startsWith('token='));
-  return token ? token.split('=')[1] : null;
-};
+
 
 const fetchProjects = async () => {
-  console.log("fetchProjects")
   try {
     loading.value = true;
     error.value = null;
 
     const token = getTokenFromCookie();
-    console.log(token)
     if (!token) {
       throw new Error('Token introuvable. Veuillez vous connecter.');
     }
