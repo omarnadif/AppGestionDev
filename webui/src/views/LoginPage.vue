@@ -119,12 +119,10 @@ const formData = ref({
 
 const handleLogin = () => {
   console.log('Form submitted:', formData.value)
-  // Ajoutez ici votre logique de connexion
 }
 
 const handleSignupSuccess = (userData) => {
   showSignupModal.value = false
-  // Optionnellement, pré-remplir l'email de connexion
   formData.value.email = userData.email
 }
 </script>
