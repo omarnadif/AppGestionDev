@@ -1,31 +1,38 @@
 import { joseUtils } from '../utils/joseUtils'
 import { supabase } from '../utils/supabaseClient'
 
-export const requireAuth = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
     
-    if (!token) {
-      return res.status(401).json({ error: 'Token manquant' })
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        error: 'Accès non autorisé - Token manquant' 
+      })
     }
 
-    // Vérifier le token avec JOSE
+    const token = authHeader.split(' ')[1]
+
     const decoded = await joseUtils.verifyToken(token)
 
-    // Vérifier si l'utilisateur existe toujours dans Supabase
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
-    if (error || !user || user.id !== decoded.userId) {
-      return res.status(401).json({ error: 'Session invalide' })
+    const { data: user, error } = await supabase
+      .from('client')
+      .select('id, email, role')
+      .eq('id', decoded.userId)
+      .single()
+
+    if (error || !user) {
+      return res.status(401).json({ 
+        error: 'Accès non autorisé - Utilisateur non trouvé' 
+      })
     }
 
     req.user = user
-    req.decodedToken = decoded
+    
     next()
   } catch (error) {
     return res.status(401).json({ 
-      error: 'Erreur d\'authentification',
-      details: error.message 
+      error: 'Accès non autorisé - Token invalide' 
     })
   }
 }
