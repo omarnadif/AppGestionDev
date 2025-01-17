@@ -125,7 +125,7 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import{getTokenFromCookie} from '../utils/utils.js'
 
 const profile = ref({
   firstName: 'John',
@@ -143,7 +143,7 @@ const uploadAvatar = async (event) => {
   }
 
   
-  const token = localStorage.getItem('token');
+  const token = getTokenFromCookie();
   if (!token) {
     alert('Vous devez être connecté pour changer votre avatar.');
     console.error('Token introuvable dans le localStorage');
