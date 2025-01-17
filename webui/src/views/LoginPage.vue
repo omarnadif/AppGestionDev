@@ -151,7 +151,6 @@
 import { ref, reactive } from 'vue'
 
 const isLogin = ref(true)
-
 const formData = reactive({
   firstName: '',
   lastName: '',
@@ -161,20 +160,60 @@ const formData = reactive({
   remember: false
 })
 
-const handleSubmit = () => {
+
+// Fonction pour s'incrire avec les données du formulaire
+const signUp = async (formData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+        firstname: formData.firstName,
+        lastname: formData.lastName
+      })
+    })
+    if (!response.ok) {
+      throw new Error('Erreur lors de l\'inscription')
+    }
+    console.log('Inscription réussie !')
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
+const handleSubmit = async () => {
   if (isLogin.value) {
+    // Soumission du formulaire de connexion
     console.log('Login form submitted:', {
       email: formData.email,
       password: formData.password,
       remember: formData.remember
     });
   } else {
-    console.log('Signup form submitted:', formData);
-    // Réinitialiser les champs sensibles comme le mot de passe
-    formData.password = '';
-    formData.confirmPassword = '';
-    // Basculer sur la page de connexion
-    isLogin.value = true;
+    // Vérification des champs pour l'inscription
+    if (formData.password !== formData.confirmPassword) {
+      console.error("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    try {
+      // Appel de l'API pour l'inscription
+      await signUp(formData);
+
+      // Réinitialiser les champs sensibles
+      formData.password = '';
+      formData.confirmPassword = '';
+
+      // Basculer vers la page de connexion
+      isLogin.value = true;
+    } catch (e) {
+      console.error("Erreur lors de l'inscription :", e);
+    }
   }
 };
 
