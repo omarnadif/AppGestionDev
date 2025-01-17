@@ -195,19 +195,20 @@ const login = async (formData) => {
       body: JSON.stringify({
         email: formData.email,
         password: formData.password,
-      })
-    })
+      }),
+    });
+
     if (!response.ok) {
-      throw new Error('Erreur lors de la connexion')
+      throw new Error('Erreur lors de la connexion');
     }
-    console.log('Connexion réussie !')
-    const data = await response.json()
-    document.cookie = `token=${data.token}`
+
+    console.log('Connexion réussie !');
     window.location.href = '/projects';
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
-}
+};
+
 
 
 const handleSubmit = async () => {

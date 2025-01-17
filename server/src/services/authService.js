@@ -94,6 +94,7 @@ export const authService = {
     }
   },
 
+
   // Rafraîchir le token
   async refreshToken(oldToken) {
     try {
