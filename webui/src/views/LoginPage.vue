@@ -10,13 +10,47 @@
           </svg>
           <span class="text-cyan-500 font-semibold tracking-wider ml-2">PROGEST</span>
         </div>
-        <h1 class="text-3xl font-bold text-white mb-2">Connexion</h1>
-        <p class="text-slate-400">Accédez à votre espace de gestion</p>
+        <h1 class="text-3xl font-bold text-white mb-2">
+          {{ isLogin ? 'Connexion' : 'Inscription' }}
+        </h1>
+        <p class="text-slate-400">
+          {{ isLogin ? 'Accédez à votre espace de gestion' : 'Créez votre compte' }}
+        </p>
       </div>
 
       <!-- Form Card -->
       <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-8 shadow-xl">
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="handleSubmit">
+          <!-- Name fields (only for signup) -->
+          <transition name="slide-fade">
+            <div v-if="!isLogin" class="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-slate-300 mb-2">Prénom</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  v-model="formData.firstName"
+                  placeholder="Jean"
+                  class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500
+                    focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+                  required
+                />
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-slate-300 mb-2">Nom</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  v-model="formData.lastName"
+                  placeholder="Dupont"
+                  class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500
+                    focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+                  required
+                />
+              </div>
+            </div>
+          </transition>
+
           <!-- Email -->
           <div class="mb-6">
             <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Email</label>
@@ -35,7 +69,7 @@
           <div class="mb-6">
             <div class="flex items-center justify-between mb-2">
               <label for="password" class="text-sm font-medium text-slate-300">Mot de passe</label>
-              <a href="#" class="text-sm text-cyan-500 hover:text-cyan-400">Mot de passe oublié ?</a>
+              <a v-if="isLogin" href="#" class="text-sm text-cyan-500 hover:text-cyan-400">Mot de passe oublié ?</a>
             </div>
             <input
               type="password"
@@ -48,16 +82,34 @@
             />
           </div>
 
-          <!-- Remember Me -->
-          <div class="mb-6 flex items-center">
-            <input
-              type="checkbox"
-              id="remember"
-              v-model="formData.remember"
-              class="w-4 h-4 border-slate-700 rounded bg-slate-900/50 text-cyan-500 focus:ring-cyan-500/20"
-            />
-            <label for="remember" class="ml-2 text-sm text-slate-300">Se souvenir de moi</label>
-          </div>
+          <!-- Confirm Password (only for signup) -->
+          <transition name="slide-fade">
+            <div v-if="!isLogin" class="mb-6">
+              <label for="confirmPassword" class="block text-sm font-medium text-slate-300 mb-2">Confirmer le mot de passe</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                v-model="formData.confirmPassword"
+                placeholder="••••••••"
+                class="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500
+                  focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200"
+                required
+              />
+            </div>
+          </transition>
+
+          <!-- Remember Me (only for login) -->
+          <transition name="slide-fade">
+            <div v-if="isLogin" class="mb-6 flex items-center">
+              <input
+                type="checkbox"
+                id="remember"
+                v-model="formData.remember"
+                class="w-4 h-4 border-slate-700 rounded bg-slate-900/50 text-cyan-500 focus:ring-cyan-500/20"
+              />
+              <label for="remember" class="ml-2 text-sm text-slate-300">Se souvenir de moi</label>
+            </div>
+          </transition>
 
           <!-- Submit Button -->
           <button
@@ -66,35 +118,24 @@
               hover:from-cyan-600 hover:to-cyan-700 focus:ring-4 focus:ring-cyan-500/30 focus:outline-none
               transition-all duration-200 flex items-center justify-center group"
           >
-            Se connecter
+            {{ isLogin ? 'Se connecter' : "S'inscrire" }}
             <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12H19M19 12L12 5M19 12L12 19" />
             </svg>
           </button>
 
-          <!-- Register Link -->
+          <!-- Toggle Form Type -->
           <div class="text-center text-slate-400 mt-6">
-            Pas encore de compte ?
-            <button @click="showSignupModal = true" class="text-cyan-500 hover:text-cyan-400 font-medium bg-transparent hover:bg-transparent">
-              Inscrivez-vous
+            {{ isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?' }}
+            <button 
+              type="button"
+              @click="toggleForm" 
+              class="text-cyan-500 hover:text-cyan-400 font-medium bg-transparent hover:bg-transparent ml-1"
+            >
+              {{ isLogin ? 'Inscrivez-vous' : 'Connectez-vous' }}
             </button>
           </div>
         </form>
-      </div>
-    </div>
-
-    <!-- Modal Signup -->
-    <div v-if="showSignupModal" 
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      @click.self="showSignupModal = false"
-    >
-      <div class="max-w-md w-full relative">
-        <button @click="showSignupModal = false" class="absolute -top-4 -right-4 text-slate-400 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <SignupForm @signup-success="handleSignupSuccess" />
       </div>
     </div>
 
@@ -107,22 +148,51 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import SignupForm from '../components/login/SignUpForm.vue'
+import { ref, reactive } from 'vue'
 
-const showSignupModal = ref(false)
-const formData = ref({
+const isLogin = ref(true)
+
+const formData = reactive({
+  firstName: '',
+  lastName: '',
   email: '',
   password: '',
+  confirmPassword: '',
   remember: false
 })
 
-const handleLogin = () => {
-  console.log('Form submitted:', formData.value)
-}
+const handleSubmit = () => {
+  if (isLogin.value) {
+    console.log('Login form submitted:', {
+      email: formData.email,
+      password: formData.password,
+      remember: formData.remember
+    });
+  } else {
+    console.log('Signup form submitted:', formData);
+    // Réinitialiser les champs sensibles comme le mot de passe
+    formData.password = '';
+    formData.confirmPassword = '';
+    // Basculer sur la page de connexion
+    isLogin.value = true;
+  }
+};
 
-const handleSignupSuccess = (userData) => {
-  showSignupModal.value = false
-  formData.value.email = userData.email
+
+const toggleForm = () => {
+  isLogin.value = !isLogin.value
 }
 </script>
+
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+</style>
