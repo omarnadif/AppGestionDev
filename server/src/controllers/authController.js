@@ -42,7 +42,8 @@ class AuthController {
       
           // Envoyer le token dans un cookie
           res.cookie('token', result.token, cookieOptions);
-      
+
+        
           return res.status(200).json({ user: result.user });
         } catch (error) {
           return res.status(401).json({ 
