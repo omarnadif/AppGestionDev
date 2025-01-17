@@ -75,9 +75,26 @@
           <!-- Register Link -->
           <div class="text-center text-slate-400 mt-6">
             Pas encore de compte ?
-            <a href="#" class="text-cyan-500 hover:text-cyan-400 font-medium">Inscrivez-vous</a>
+            <button @click="showSignupModal = true" class="text-cyan-500 hover:text-cyan-400 font-medium bg-transparent hover:bg-transparent">
+              Inscrivez-vous
+            </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal Signup -->
+    <div v-if="showSignupModal" 
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      @click.self="showSignupModal = false"
+    >
+      <div class="max-w-md w-full relative">
+        <button @click="showSignupModal = false" class="absolute -top-4 -right-4 text-slate-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <SignupForm @signup-success="handleSignupSuccess" />
       </div>
     </div>
 
@@ -89,27 +106,25 @@
   </div>
 </template>
 
-<script>
-import { reactive } from 'vue'
+<script setup>
+import { ref } from 'vue'
+import SignupForm from '../components/login/SignUpForm.vue'
 
-export default {
-  name: 'LoginPage',
-  setup() {
-    const formData = reactive({
-      email: '',
-      password: '',
-      remember: false
-    })
+const showSignupModal = ref(false)
+const formData = ref({
+  email: '',
+  password: '',
+  remember: false
+})
 
-    const handleLogin = () => {
-      console.log('Form submitted:', formData)
-      // Ajoutez ici votre logique de connexion
-    }
+const handleLogin = () => {
+  console.log('Form submitted:', formData.value)
+  // Ajoutez ici votre logique de connexion
+}
 
-    return {
-      formData,
-      handleLogin
-    }
-  }
+const handleSignupSuccess = (userData) => {
+  showSignupModal.value = false
+  // Optionnellement, pré-remplir l'email de connexion
+  formData.value.email = userData.email
 }
 </script>
