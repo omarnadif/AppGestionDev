@@ -18,14 +18,17 @@ class TaskModel {
      * @param {Object} taskData - Task data to insert.
      */
     static async createTask(taskData) {
-        const { data, error, status } = await supabase.from('t_task').insert([taskData]);
+        const { data, error } = await supabase
+            .from('t_task')
+            .insert([taskData])
+            .select('*');  // Ajout de cette ligne pour retourner la tâche créée
+    
         if (error) {
             console.error('Error creating task:', error);
             throw new Error('Database insert error.');
         }
-        console.log('Task created:', status);
-        // renvoie seulement comme quoi la tâche a été créée
-        return status;
+    
+        return data[0];  // Retourne la première (et seule) tâche créée
     }
 }
 

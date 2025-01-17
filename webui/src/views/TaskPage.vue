@@ -1,6 +1,26 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4">
     <div class="container mx-auto max-w-7xl">
+      <!-- Header Section -->
+      <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-8 shadow-xl flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-white">Gestionnaire de Tâches</h1>
+        <button
+          @click="showModal = true"
+          class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg font-medium
+            hover:from-cyan-600 hover:to-cyan-700 transition-all duration-200 flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Nouvelle tâche
+        </button>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="error" class="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500">
+        {{ error }}
+      </div>
+
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div class="text-cyan-500 flex items-center gap-3">
@@ -13,29 +33,12 @@
       </div>
 
       <div v-else>
-        <!-- Header Section -->
-        <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-8 shadow-xl">
-          <h1 class="text-3xl font-bold text-white">Gestionnaire de Tâches</h1>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="error" class="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500">
-          {{ error }}
-        </div>
-
-        <!-- Task Form -->
-        <div class="mb-8">
-          <TaskForm @add-task="addTask" />
-        </div>
-
         <!-- Filters Section -->
         <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-8 shadow-xl">
           <div class="flex flex-col md:flex-row gap-6">
             <!-- État Filter -->
             <div class="flex-1 space-y-2">
-              <label class="block text-sm font-medium text-slate-400">
-                État
-              </label>
+              <label class="block text-sm font-medium text-slate-400">État</label>
               <div class="relative">
                 <select
                   v-model="statusFilter"
@@ -43,12 +46,7 @@
                     focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200
                     appearance-none"
                 >
-                  <option 
-                    v-for="status in statusOptions" 
-                    :key="status" 
-                    :value="status"
-                    class="bg-slate-800"
-                  >
+                  <option v-for="status in statusOptions" :key="status" :value="status" class="bg-slate-800">
                     {{ status === 'tous' ? 'Tous les états' : status }}
                   </option>
                 </select>
@@ -62,9 +60,7 @@
 
             <!-- Percentage Filter -->
             <div class="flex-1 space-y-2">
-              <label class="block text-sm font-medium text-slate-400">
-                Pourcentage
-              </label>
+              <label class="block text-sm font-medium text-slate-400">Progression</label>
               <div class="relative">
                 <select
                   v-model="percentageFilter"
@@ -72,12 +68,7 @@
                     focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all duration-200
                     appearance-none"
                 >
-                  <option 
-                    v-for="option in percentageOptions" 
-                    :key="option.value" 
-                    :value="option.value"
-                    class="bg-slate-800"
-                  >
+                  <option v-for="option in percentageOptions" :key="option.value" :value="option.value" class="bg-slate-800">
                     {{ option.label }}
                   </option>
                 </select>
@@ -95,9 +86,7 @@
         <div class="space-y-6">
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-white">Liste des tâches</h2>
-            <span class="text-slate-400">
-              {{ filteredTasks.length }} tâche(s)
-            </span>
+            <span class="text-slate-400">{{ filteredTasks.length }} tâche(s)</span>
           </div>
 
           <!-- No Tasks Message -->
@@ -114,7 +103,7 @@
           </div>
 
           <!-- Tasks Grid -->
-          <div class="grid grid-cols-1 gap-6">
+          <div v-else class="grid grid-cols-1 gap-6">
             <TaskItem
               v-for="task in filteredTasks"
               :key="task.id"
@@ -126,37 +115,82 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal -->
+      <div v-if="showModal" 
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        @click.self="showModal = false"
+      >
+        <div class="relative w-full max-w-2xl">
+          <TaskForm 
+            @add-task="handleAddTask" 
+            @cancel="showModal = false"
+             :projects="projects"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import TaskItem from '@/components/tasks/TaskItem.vue'
-import TaskForm from '@/components/tasks/TaskForm.vue'
+import TaskItem from '@/components/tasks/TaskItem.vue';
+import TaskForm from '@/components/tasks/TaskForm.vue';
 
+// State
+const showModal = ref(false);
+const loading = ref(true);
+const error = ref(null);
 const tasks = ref([]);
 const statusFilter = ref('tous');
 const percentageFilter = ref('tous');
-const projectFilter = ref('tous');
-const loading = ref(true);
-const error = ref(null);
+const projects = ref([]);
 
+
+// Options
 const statusOptions = ['tous', 'A faire', 'En cours', 'Terminée'];
 const percentageOptions = [
-  { value: 'tous', label: 'Tous' },
+  { value: 'tous', label: 'Toutes les progressions' },
   { value: '0-25', label: '0-25%' },
   { value: '26-50', label: '26-50%' },
   { value: '51-75', label: '51-75%' },
   { value: '76-100', label: '76-100%' }
 ];
 
-// Charger les tâches depuis l'API
+// Computed
+const filteredTasks = computed(() => {
+  return tasks.value.filter(task => {
+    const statusMatch = statusFilter.value === 'tous' || task.status === statusFilter.value;
+    
+    let percentageMatch = true;
+    if (percentageFilter.value !== 'tous') {
+      const [min, max] = percentageFilter.value.split('-').map(Number);
+      percentageMatch = task.completion_percentage >= min && task.completion_percentage <= max;
+    }
+    
+    return statusMatch && percentageMatch;
+  });
+});
+
+// Fonction pour charger les projets
+const fetchProjects = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/project');
+    if (!response.ok) throw new Error('Erreur lors du chargement des projets');
+    projects.value = await response.json();
+  } catch (e) {
+    error.value = e.message;
+    console.error(e);
+  }
+};
+
+// Methods
 const fetchTasks = async () => {
   try {
     loading.value = true;
     error.value = null;
-    const response = await fetch('http://localhost:5000/api/tasks/getTasks'); 
+    const response = await fetch('http://localhost:5000/api/tasks/getTasks');
     if (!response.ok) throw new Error('Erreur lors du chargement des tâches');
     tasks.value = await response.json();
   } catch (e) {
@@ -166,57 +200,16 @@ const fetchTasks = async () => {
     loading.value = false;
   }
 };
-const filteredTasks = computed(() => {
-  return tasks.value.filter(task => {
-    const statusMatch = statusFilter.value === 'tous' || task.status === statusFilter.value;
-    const projectMatch = projectFilter.value === 'tous' || task.project_id === projectFilter.value;
-    
-    let percentageMatch = true;
-    if (percentageFilter.value !== 'tous') {
-      const taskPercentage = task.completion_percentage || 0;
-      const [min, max] = percentageFilter.value.split('-').map(Number);
-      percentageMatch = taskPercentage >= min && taskPercentage <= max;
-    }
-    
-    return statusMatch && percentageMatch && projectMatch;
-  });
-});
 
-const addTask = async (newTask) => {
-  try {
-    const response = await fetch('http://localhost:5000/api/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        title: newTask.title,
-        description: newTask.description,
-        status: 'A faire',
-        percentage: 0,
-        project_id: newTask.project_id,
-        assigned_to: newTask.assigned_to
-      })
-    });
-
-    if (!response.ok) throw new Error('Erreur lors de la création de la tâche');
-    await fetchTasks();
-  } catch (e) {
-    error.value = e.message;
-    console.error(e);
-  }
-};
 
 const updateTaskStatus = async (taskId, newStatus) => {
   try {
     const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: newStatus,
-        percentage: newStatus === 'Terminée' ? 100 : newStatus === 'A faire' ? 0 : 50
+        completion_percentage: newStatus === 'Terminée' ? 100 : newStatus === 'A faire' ? 0 : 50
       })
     });
 
@@ -232,11 +225,9 @@ const updateTaskPercentage = async (taskId, newPercentage) => {
   try {
     const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        percentage: newPercentage,
+        completion_percentage: newPercentage,
         status: newPercentage === 0 ? 'A faire' : newPercentage === 100 ? 'Terminée' : 'En cours'
       })
     });
@@ -265,5 +256,9 @@ const deleteTask = async (taskId) => {
   }
 };
 
-onMounted(fetchTasks);
+// Initialize
+onMounted(async () => {
+  await Promise.all([fetchTasks(), fetchProjects()]); // Chargement parallèle des tâches et des projets
+});
+
 </script>
