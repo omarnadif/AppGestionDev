@@ -23,7 +23,7 @@
       <!-- Project Header -->
       <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-8 shadow-xl">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h1 class="text-3xl font-bold text-white">{{ project.Name }}</h1>
+          <h1 class="text-3xl font-bold text-white">{{ project.name }}</h1>
           <div class="flex items-center gap-2">
             <span class="text-slate-400">{{ progress }}% complété</span>
             <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -42,20 +42,20 @@
         <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 shadow-xl">
           <h2 class="text-xl font-semibold text-white mb-6">Détails du projet</h2>
           <div class="space-y-4">
-            <div class="text-slate-400">{{ project.Description }}</div>
+            <div class="text-slate-400">{{ project.description }}</div>
             <div class="border-t border-slate-700 pt-4">
               <div class="grid grid-cols-1 gap-4">
                 <div>
                   <label class="text-sm text-slate-500">Responsable</label>
-                  <p class="text-white">{{ project.Responsible_id }}</p>
+                  <p class="text-white">{{ project.responsible_id }}</p>
                 </div>
                 <div>
                   <label class="text-sm text-slate-500">Date de début</label>
-                  <p class="text-white">{{ formatDate(project.Start_date) }}</p>
+                  <p class="text-white">{{ formatDate(project.start_date) }}</p>
                 </div>
                 <div>
                   <label class="text-sm text-slate-500">Date de fin</label>
-                  <p class="text-white">{{ formatDate(project.End_date) }}</p>
+                  <p class="text-white">{{ formatDate(project.end_date) }}</p>
                 </div>
               </div>
             </div>
@@ -82,19 +82,27 @@
           </div>
 
           <!-- New Task Form -->
-          <TaskForm 
-            v-if="showNewTaskForm" 
-            @add-task="addTask"
-            @cancel="showNewTaskForm = false"
-            class="mb-6"
-          />
+          <div v-if="showNewTaskForm" class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-6 shadow-xl">
+            <TaskForm 
+              @add-task="addTask"
+              @cancel="showNewTaskForm = false"
+            />
+          </div>
 
           <!-- Tasks List -->
-          <TaskList 
-            :tasks="tasks"
-            @update-task="updateTask"
-            @delete-task="deleteTask"
-          />
+          <div v-if="tasks.length === 0" class="text-center text-slate-400 py-8">
+            Aucune tâche pour ce projet
+          </div>
+          <div v-else class="space-y-4">
+            <div v-for="task in tasks" :key="task.id" 
+              class="bg-slate-800/50 backdrop-blur-xl rounded-xl border border-slate-700 p-4 shadow-lg">
+              <TaskItem 
+                :task="task"
+                @update="updateTask"
+                @delete="deleteTask"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -110,8 +118,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import TaskForm from '@/components/TaskForm.vue'
-import TaskList from '@/components/TaskList.vue'
+import TaskForm from '@/components/tasks/TaskForm.vue'
+import TaskItem from '@/components/tasks/TaskItem.vue'
 
 const route = useRoute()
 const project = ref(null)
@@ -120,13 +128,18 @@ const showNewTaskForm = ref(false)
 const loading = ref(true)
 const error = ref(null)
 
+// Calculer le pourcentage global de progression
 const progress = computed(() => {
   if (!tasks.value?.length) return 0
-  const total = tasks.value.reduce((acc, task) => acc + task.percentage, 0)
+  const total = tasks.value.reduce((acc, task) => {
+    return acc + (task.percentage || 0)
+  }, 0)
   return Math.round(total / tasks.value.length)
 })
 
+// Formater les dates
 const formatDate = (date) => {
+  if (!date) return 'Non définie'
   return new Date(date).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
@@ -139,12 +152,10 @@ const fetchProject = async () => {
   try {
     loading.value = true
     error.value = null
-    
-    const response = await fetch(`http://localhost:5000/api/projects/${route.params.id}`)
+    const response = await fetch(`http://localhost:5000/api/project/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Erreur lors du chargement du projet')
     }
-    
     project.value = await response.json()
     await fetchTasks()
   } catch (e) {
@@ -157,7 +168,7 @@ const fetchProject = async () => {
 // Charger les tâches du projet
 const fetchTasks = async () => {
   try {
-    const response = await fetch(`http://localhost:5000/api/projects/${route.params.id}/tasks`)
+    const response = await fetch(`http://localhost:5000/api/tasks/project/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Erreur lors du chargement des tâches')
     }
@@ -170,15 +181,16 @@ const fetchTasks = async () => {
 // Ajouter une nouvelle tâche
 const addTask = async (newTask) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/projects/${route.params.id}/tasks`, {
+    const response = await fetch('http://localhost:5000/api/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: newTask.title,
+        title: newTask.title,
         description: newTask.description,
-        status: 'A faire',
+        status: 'En attente',
+        project_id: route.params.id,
         percentage: 0,
         start_date: newTask.startDate,
         end_date: newTask.endDate,

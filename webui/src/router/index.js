@@ -1,10 +1,10 @@
 // router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
-import ProjectList from '@/views/ProjectList.vue'
-import ProjectDetails from '@/views/ProjectDetails.vue'
-import TaskList from '@/views/TaskList.vue'
-import UserProfile from '@/views/UserProfile.vue'
+import ProjectList from '@/views/ProjectPage.vue'
+import ProjectDetails from '@/components/projects/ProjectDetails.vue'
+import TaskList from '@/views/TaskPage.vue'
+import UserProfile from '@/views/UserProfilePage.vue'
 import LoginPage from '@/views/LoginPage.vue'
 
 const routes = [

@@ -3,28 +3,25 @@
     <!-- Glassmorphism Background -->
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/95 to-slate-800/95 backdrop-blur-md border-b border-white/5"></div>
     
-    <nav class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="relative max-w-7xl mx-auto  sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo/Brand -->
         <div class="flex-shrink-0">
-          <RouterLink 
-            to="/" 
-            class="flex items-center gap-3 group"
+          <RouterLink
+              to="/"
+              class="flex items-center gap-2 group"
           >
-            <div class="relative overflow-hidden rounded-xl p-2 group-hover:scale-110 transition-all duration-300">
-              <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 blur opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <svg class="relative w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
-              </svg>
+            <div class="relative overflow-hidden rounded-xl group-hover:scale-110 transition-all duration-300">
+              <img src="/images/logo.png" alt="Logo" class="w-6 h-6 object-contain" />
             </div>
-            <div class="flex flex-col">
-              <span class="text-lg font-bold text-white">
-                ProGest
-              </span>
-          
+            <div>
+      <span class="text-lg font-bold text-white">
+        TaskFlow
+      </span>
             </div>
           </RouterLink>
         </div>
+
 
         <!-- Navigation Links - Desktop -->
         <div class="hidden md:flex md:items-center md:space-x-8">

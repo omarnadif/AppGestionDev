@@ -5,7 +5,7 @@
       <h2 class="text-2xl font-bold text-white">Nouveau Projet</h2>
       <p class="text-slate-400 mt-2">Créez un nouveau projet et assignez-le à un responsable</p>
     </div>
-
+ 
     <!-- Error Message -->
     <div v-if="error" class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500">
       <div class="flex items-center gap-2">
@@ -15,7 +15,7 @@
         {{ error }}
       </div>
     </div>
-
+ 
     <div class="space-y-6">
       <!-- Nom du projet -->
       <div class="space-y-2">
@@ -34,7 +34,7 @@
             disabled:opacity-50 disabled:cursor-not-allowed"
         >
       </div>
-
+ 
       <!-- Description -->
       <div class="space-y-2">
         <label for="description" class="block text-sm font-medium text-slate-400">
@@ -51,7 +51,7 @@
             resize-none disabled:opacity-50 disabled:cursor-not-allowed"
         ></textarea>
       </div>
-
+ 
       <!-- Responsable -->
       <div class="space-y-2">
         <label for="responsible" class="block text-sm font-medium text-slate-400">
@@ -69,7 +69,7 @@
           >
             <option value="" disabled selected class="bg-slate-800">Sélectionner un responsable</option>
             <option v-for="user in users" :key="user.id" :value="user.id" class="bg-slate-800">
-              {{ user.firstname }} {{ user.lastname }}
+              {{ user.username }}
             </option>
           </select>
           <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
@@ -78,14 +78,14 @@
             </svg>
           </div>
         </div>
-        <div v-if="loading" class="text-sm text-cyan-500 flex items-center gap-2">
+        <div v-if="loadingUsers" class="text-sm text-cyan-500 flex items-center gap-2">
           <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Chargement des utilisateurs...
         </div>
       </div>
-
+ 
       <!-- Dates Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Date de début -->
@@ -104,7 +104,7 @@
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
         </div>
-
+ 
         <!-- Date de fin -->
         <div class="space-y-2">
           <label for="endDate" class="block text-sm font-medium text-slate-400">
@@ -123,7 +123,7 @@
           >
         </div>
       </div>
-
+ 
       <!-- Form Actions -->
       <div class="flex items-center gap-4 pt-4">
         <button
@@ -153,81 +153,104 @@
       </div>
     </div>
   </form>
-</template>
-
-<script setup>
-import { ref, onMounted, defineEmits } from 'vue';
-
-const emit = defineEmits(['add-project', 'cancel']);
-
-const projectName = ref('');
-const description = ref('');
-const startDate = ref('');
-const endDate = ref('');
-const responsibleId = ref('');
-const users = ref([]);
-const loading = ref(false);
-const error = ref(null);
-
-// Charger la liste des utilisateurs
-const fetchUsers = async () => {
+ </template>
+ 
+ <script setup>
+ import { ref, onMounted, defineEmits } from 'vue';
+ 
+ const emit = defineEmits(['add-project', 'cancel']);
+ 
+ const projectName = ref('');
+ const description = ref('');
+ const startDate = ref('');
+ const endDate = ref('');
+ const responsibleId = ref('');
+ const users = ref([]);
+ const loading = ref(false);
+ const loadingUsers = ref(false);
+ const error = ref(null);
+ 
+ // Charger la liste des utilisateurs
+ const fetchUsers = async () => {
   try {
-    loading.value = true;
-    const response = await fetch('http://localhost:5000/api/users');
+    loadingUsers.value = true;
+    const response = await fetch('http://localhost:5000/api/user');
     if (!response.ok) throw new Error('Erreur lors du chargement des utilisateurs');
     users.value = await response.json();
   } catch (e) {
     error.value = "Impossible de charger la liste des utilisateurs";
     console.error(e);
   } finally {
+    loadingUsers.value = false;
+  }
+ };
+ 
+ const validateDates = () => {
+  if (!startDate.value || !endDate.value) {
+    error.value = "Les dates sont requises";
+    return false;
+  }
+  
+  if (new Date(endDate.value) < new Date(startDate.value)) {
+    error.value = "La date de fin doit être supérieure à la date de début";
+    return false;
+  }
+  
+  return true;
+ };
+ 
+ const submitProject = async () => {
+  if (!projectName.value.trim()) {
+    error.value = "Le nom du projet est requis";
+    return;
+  }
+ 
+  if (!validateDates()) {
+    return;
+  }
+ 
+  try {
+    loading.value = true;
+    error.value = null;
+ 
+    const projectData = {
+      name: projectName.value,
+      description: description.value,
+      responsible_id: parseInt(responsibleId.value),
+      start_date: new Date(startDate.value).toISOString(),
+      end_date: new Date(endDate.value).toISOString()
+    };
+ 
+    const response = await fetch('http://localhost:5000/api/project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(projectData)
+    });
+ 
+    if (!response.ok) {
+      throw new Error('Erreur lors de la création du projet');
+    }
+ 
+    const newProject = await response.json();
+    emit('add-project', newProject);
+    resetForm();
+  } catch (e) {
+    error.value = e.message;
+  } finally {
     loading.value = false;
   }
-};
-
-const submitProject = async () => {
-  if (projectName.value.trim()) {
-    try {
-      loading.value = true;
-      error.value = null;
-
-      const projectData = {
-        Name: projectName.value,
-        Description: description.value,
-        Responsible_id: parseInt(responsibleId.value),
-        Start_date: new Date(startDate.value).toISOString(),
-        End_date: new Date(endDate.value).toISOString()
-      };
-
-      const response = await fetch('http://localhost:5000/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(projectData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création du projet');
-      }
-
-      const newProject = await response.json();
-      emit('add-project', newProject);
-      resetForm();
-    } catch (e) {
-      error.value = e.message;
-    } finally {
-      loading.value = false;
-    }
-  }
-};
-
-const resetForm = () => {
+ };
+ 
+ const resetForm = () => {
   projectName.value = '';
   description.value = '';
   startDate.value = '';
   endDate.value = '';
   responsibleId.value = '';
-};
-
-onMounted(fetchUsers);
-</script>
+  error.value = null;
+ };
+ 
+ onMounted(fetchUsers);
+ </script>
