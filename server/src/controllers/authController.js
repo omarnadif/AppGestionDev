@@ -21,31 +21,24 @@ class AuthController {
     
     static async login(req, res) {
         try {
-        const { email, password } = req.body
+          const { email, password } = req.body
     
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email et mot de passe requis' })
-        }
+          if (!email || !password) {
+            return res.status(400).json({ 
+              error: 'Email et mot de passe requis' 
+            })
+          }
     
-        const user = await UserModel.findByEmail(email)
+          const result = await authService.login(email, password)
     
-        if (!user) {
-            return res.status(404).json({ error: 'Utilisateur non trouvé' })
-        }
-    
-        const isPasswordValid = await user.comparePassword(password)
-    
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Mot de passe incorrect' })
-        }
-    
-        const token = await authService.login(user)
-    
-        return res.status(200).json({ token })
+          return res.status(200).json(result)
         } catch (error) {
-        return res.status(400).json({ error: error.message })
+
+            return res.status(401).json({ 
+            error: error.message 
+          })
         }
-    }
+      }
     
     static async logout(req, res) {
         try {

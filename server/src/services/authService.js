@@ -57,28 +57,36 @@ export const authService = {
     }
   },
 
-  // Connexion
-  async signIn(email, password) {
+  async login(email, password) {
     try {
-      const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      
-      if (signInError) throw signInError
+      // Vérifier si l'utilisateur existe
+      const { data: user, error } = await supabase
+        .from('t_user')
+        .select('*')
+        .eq('email', email)
+        .single()
 
-      // Créer le payload du token
-      const payload = {
-        userId: user.id,
-        email: user.email,
-        role: 'user'
+      if (error || !user) {
+        throw new Error('Email ou mot de passe incorrect')
       }
 
-      // Générer le token avec JOSE
-      const token = await joseUtils.generateToken(payload)
-      
+      // Vérifier le mot de passe
+      const validPassword = await bcrypt.compare(password, user.password_hash)
+      if (!validPassword) {
+        throw new Error('Email ou mot de passe incorrect')
+      }
+
+      // Générer le JWT
+      const token = await joseUtils.generateToken({
+        userId: user.id,
+        email: user.email,
+      })
+
+      // Ne pas renvoyer le mot de passe hashé
+      const { password: _, ...userWithoutPassword } = user
+
       return {
-        user,
+        user: userWithoutPassword,
         token
       }
     } catch (error) {
