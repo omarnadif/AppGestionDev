@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
-    <!-- Header Section -->
     <div class="container mx-auto px-4 py-8">
       <div class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 mb-8 shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -18,7 +17,6 @@
         </div>
       </div>
 
-      <!-- New Project Form -->
       <div v-if="showNewProjectForm" class="mb-8">
         <ProjectForm 
           @add-project="addProject" 
@@ -27,7 +25,6 @@
         />
       </div>
 
-      <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div class="text-cyan-500 flex items-center gap-3">
           <svg class="animate-spin h-8 w-8" viewBox="0 0 24 24">
@@ -38,42 +35,27 @@
         </div>
       </div>
 
-      <!-- Error State -->
       <div v-else-if="error" class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-red-500 backdrop-blur-xl">
         {{ error }}
       </div>
 
-      <!-- Projects Grid -->
-<div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <div v-for="project in projects" :key="project.id" 
-    class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 shadow-xl
-      hover:border-cyan-500/50 transition-all duration-300 group">
-    
-    <!-- Project Header -->
-    <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-cyan-500 transition-colors">
-      {{ project.name }}
-    </h3>
-    
-    <!-- Project Description -->
-    <p class="text-slate-400 mb-4 line-clamp-2">{{ project.description }}</p>
-    
-    <!-- Project Dates -->
-    <div class="space-y-2 mb-6">
-      <div class="flex items-center text-sm text-slate-500">
-        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <span>Début: {{ formatDate(project.start_date) }}</span>
-      </div>
-      <div class="flex items-center text-sm text-slate-500">
-        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <span>Fin: {{ formatDate(project.end_date) }}</span>
-      </div>
-    </div>
-
-          <!-- Project Actions -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="project in projects" :key="project.id" 
+          class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 shadow-xl
+            hover:border-cyan-500/50 transition-all duration-300 group">
+          <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-cyan-500 transition-colors">
+            {{ project.name }}
+          </h3>
+          <p class="text-slate-400 mb-4 line-clamp-2">{{ project.description }}</p>
+          <div class="space-y-2 mb-6">
+            <div class="flex items-center text-sm text-slate-500">
+              <span>Début: {{ formatDate(project.start_date) }}</span>
+            </div>
+            <div class="flex items-center text-sm text-slate-500">
+              <span>Fin: {{ formatDate(project.end_date) }}</span>
+            </div>
+          </div>
+          
           <div class="flex items-center gap-3">
             <router-link 
               :to="`/project/${project.id}`"
@@ -95,28 +77,28 @@
         </div>
       </div>
     </div>
-
-    <!-- Background Elements -->
-    <div class="absolute top-0 left-0 w-full h-full -z-10" aria-hidden="true">
-      <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full filter blur-3xl"></div>
-      <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full filter blur-3xl"></div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import ProjectForm from '@/components/projects/ProjectForm.vue'
-import { getTokenFromCookie } from '../utils/utils.js'
+import { ref, onMounted } from 'vue';
+import ProjectForm from '@/components/projects/ProjectForm.vue';
+import { getTokenFromCookie } from '../utils/utils.js';
 
-const showNewProjectForm = ref(false)
-const projects = ref([])
-const loading = ref(true)
-const error = ref(null)
 
-// Fonction pour charger les projets depuis l'API
-// Fonction pour récupérer le token depuis les cookies
+const formatDate = (date) => {
+  if (!date) return "Date inconnue";
+  return new Date(date).toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
 
+const showNewProjectForm = ref(false);
+const projects = ref([]);
+const loading = ref(true);
+const error = ref(null);
 
 const fetchProjects = async () => {
   try {
@@ -124,21 +106,26 @@ const fetchProjects = async () => {
     error.value = null;
 
     const token = getTokenFromCookie();
+    console.log("Token récupéré :", token);
     if (!token) {
       throw new Error('Token introuvable. Veuillez vous connecter.');
     }
 
-    const response = await fetch(`http://localhost:5000/api/project/`, {
+    console.log("Document Cookies :", document.cookie);
+
+
+    const response = await fetch('http://localhost:5000/api/project/', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-      }
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // 🔥 Important pour envoyer les cookies
     });
 
     if (!response.ok) {
       throw new Error('Erreur lors du chargement des projets');
     }
-    console.log("response", response)
 
     projects.value = await response.json();
   } catch (e) {
@@ -147,60 +134,6 @@ const fetchProjects = async () => {
     loading.value = false;
   }
 };
-// Fonction pour ajouter un nouveau projet
-const addProject = async (project) => {
-  try {
-    const response = await fetch('http://localhost:5000/api/project', { // Corriger l'URL aussi
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: project.name,
-        description: project.description,
-        start_date: project.startDate,
-        end_date: project.endDate,
-        responsible_id: project.responsibleId
-      })
-    })
 
-    if (!response.ok) {
-      throw new Error('Erreur lors de la création du projet')
-    }
-
-    await fetchProjects()
-    showNewProjectForm.value = false
-  } catch (e) {
-    error.value = e.message
-  }
-}
-
-// Fonction pour supprimer un projet
-const deleteProject = async (id) => {
-  if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-    try {
-      const response = await fetch(`http://localhost:5000/api/project/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression du projet')
-      }
-
-      await fetchProjects()
-    } catch (e) {
-      error.value = e.message
-    }
-  }
-}
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-onMounted(fetchProjects)
+onMounted(fetchProjects);
 </script>

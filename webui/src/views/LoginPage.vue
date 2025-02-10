@@ -161,7 +161,6 @@ const formData = reactive({
 })
 
 
-// Fonction pour s'incrire avec les données du formulaire
 const signUp = async (formData) => {
   try {
     const response = await fetch('http://localhost:5000/api/auth/signup', {
@@ -169,46 +168,65 @@ const signUp = async (formData) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // 🔥 Important pour gérer les cookies
       body: JSON.stringify({
         email: formData.email,
         password: formData.password,
         firstname: formData.firstName,
         lastname: formData.lastName
       })
-    })
+    });
+
     if (!response.ok) {
-      throw new Error('Erreur lors de l\'inscription')
+      const errorData = await response.json(); // Récupérer l'erreur du serveur
+      throw new Error(errorData.error || "Erreur lors de l'inscription");
     }
-    console.log('Inscription réussie !')
+
+    const data = await response.json(); // Récupérer la réponse du serveur
+
+    console.log('Inscription réussie:', data);
+
+    // Vérifie si le cookie est bien enregistré
+    console.log('Cookies après inscription:', document.cookie);
+
   } catch (e) {
-    console.error(e)
+    console.error("Erreur lors de l'inscription :", e.message);
   }
-}
+};
+
 
 const login = async (formData) => {
   try {
     const response = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // 🔥 Important pour envoyer et recevoir les cookies
+  body: JSON.stringify({
+    email: formData.email,
+    password: formData.password,
+  }),
+});
 
-    if (!response.ok) {
-      throw new Error('Erreur lors de la connexion');
-    }
+if (!response.ok) {
+  throw new Error('Erreur lors de la connexion');
+}
 
-    console.log('Connexion réussie !');
-    window.location.href = '/projects';
+console.log('Connexion réussie !');
+
+// Vérifie si le cookie est bien enregistré
+console.log('Cookies actuels:', document.cookie);
+
+// Rediriger après connexion
+window.location.href = '/projects';
+
   } catch (e) {
     console.error(e);
   }
 };
 
+console.log('Cookies après connexion:', document.cookie);
 
 
 const handleSubmit = async () => {

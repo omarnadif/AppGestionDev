@@ -8,16 +8,28 @@ import taskRoutes from './routes/taskRoute.js';
 import roleRoutes from './routes/roleRoute.js';
 import projectRoutes from './routes/projectRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import cookieParser from 'cookie-parser';
+
+
+
+
+
 
 dotenv.config();
 
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:8080', // ⚠️ Mets l'URL exacte de ton frontend
+    credentials: true, // 🔥 Indispensable pour gérer les cookies et sessions
+    allowedHeaders: ['Content-Type', 'Authorization'], // Permet les headers nécessaires
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Définit les méthodes autorisées
+  }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser()); 
 
 // Routes
 app.use('/api/user', userRoutes);

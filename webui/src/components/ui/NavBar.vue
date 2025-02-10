@@ -3,77 +3,51 @@
     <!-- Glassmorphism Background -->
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/95 to-slate-800/95 backdrop-blur-md border-b border-white/5"></div>
     
-    <nav class="relative max-w-7xl mx-auto  sm:px-6 lg:px-8">
+    <nav class="relative max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo/Brand -->
         <div class="flex-shrink-0">
-          <RouterLink
-              to="/"
-              class="flex items-center gap-2 group"
-          >
+          <RouterLink to="/" class="flex items-center gap-2 group">
             <div class="relative overflow-hidden rounded-xl group-hover:scale-110 transition-all duration-300">
               <img src="/images/logo.png" alt="Logo" class="w-6 h-6 object-contain" />
             </div>
-            <div>
-      <span class="text-lg font-bold text-white">
-        TaskFlow
-      </span>
-            </div>
+            <span class="text-lg font-bold text-white">TaskFlow</span>
           </RouterLink>
         </div>
 
-
         <!-- Navigation Links - Desktop -->
         <div class="hidden md:flex md:items-center md:space-x-8">
-          <RouterLink 
-            v-for="item in navigationItems" 
-            :key="item.path" 
+          <RouterLink
+            v-for="item in navigationItems"
+            :key="item.path"
             :to="item.path"
-            class="relative px-3 py-2 text-sm font-medium text-white/70 hover:text-white
-              transition-all duration-200 group"
+            class="relative px-3 py-2 text-sm font-medium text-white/70 hover:text-white transition-all duration-200 group"
             v-slot="{ isActive }"
           >
-            <!-- Hover & Active Effect -->
-            <span class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg
+            <!-- Active/Hover Effects -->
+            <span 
+              class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg
               opacity-0 group-hover:opacity-100 transition-opacity duration-200"
               :class="{ 'opacity-100': isActive }"
             ></span>
-            
-            <!-- Background Glow Effect -->
             <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-blue-500/0
               opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
               :class="{ 'opacity-100': isActive }"
             ></span>
-
-            <!-- Text -->
-            <span class="relative">
-              {{ item.name }}
-            </span>
-
-            <!-- Bottom Line -->
-            <span 
-              class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-cyan-500 to-blue-500
-                transform origin-left scale-x-0 transition-transform duration-300 rounded-full"
-              :class="{ 'scale-x-100': isActive }"
-            ></span>
+            <span class="relative">{{ item.name }}</span>
           </RouterLink>
         </div>
 
         <!-- Auth Button -->
         <div class="hidden md:block">
           <button
-            @click="isAuthenticated ? logout() : (window.location.href = '/login')"
+            @click="handleAuthClick"
             class="relative inline-flex items-center gap-2 px-4 py-2 group"
           >
-            <!-- Button Background -->
             <span class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg
               group-hover:opacity-90 transition-opacity duration-300"></span>
-            
-            <!-- Button Glow -->
             <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500
               opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-300"></span>
-            
-            <!-- Button Content -->
             <svg class="relative w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path v-if="!isAuthenticated" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               <path v-else d="M10 9v6m4-6v6m-7 8h10a3 3 0 003-3V5a3 3 0 00-3-3H7a3 3 0 00-3 3v14a3 3 0 003 3z" />
@@ -84,17 +58,14 @@
           </button>
         </div>
 
-
         <!-- Mobile Menu Button -->
         <div class="md:hidden">
           <button 
             @click="isMenuOpen = !isMenuOpen"
-            class="relative p-2 rounded-lg text-white/70 hover:text-white
-              transition-colors duration-200 focus:outline-none"
+            class="relative p-2 rounded-lg text-white/70 hover:text-white transition-colors duration-200 focus:outline-none"
           >
             <span class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-lg
               opacity-0 hover:opacity-100 transition-opacity duration-200"></span>
-            
             <svg 
               class="w-6 h-6 transition-transform duration-300"
               :class="{ 'rotate-180': isMenuOpen }"
@@ -143,16 +114,6 @@
             >
               {{ item.name }}
             </RouterLink>
-            
-            <RouterLink
-              to="/login"
-              class="block mt-4 px-3 py-2 rounded-lg text-base font-medium text-white
-                bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-90
-                transition-opacity duration-200"
-              @click="isMenuOpen = false"
-            >
-              Connexion
-            </RouterLink>
           </div>
         </div>
       </transition>
@@ -164,37 +125,38 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-  import { getTokenFromCookie } from '../../utils/utils.js'
+import { ref } from 'vue'
+import { getTokenFromCookie } from '../../utils/utils.js'
 
-  const isMenuOpen = ref(false)
+const isMenuOpen = ref(false)
+const token = getTokenFromCookie()
+const isAuthenticated = ref(!!token)
 
-  const token = getTokenFromCookie();
-  const isAuthenticated = ref(!!token);
-  
+const navigationItems = [
+  { name: 'Projets', path: '/projects' },
+  { name: 'Tâches', path: '/tasks' },
+  { name: 'Profil', path: '/profile' }
+]
 
-  const navigationItems = [
-    { name: 'Projets', path: '/projects' },
-    { name: 'Tâches', path: '/tasks' },
-    { name: 'Profil', path: '/profile' }
-  ]
-
-
-  const logout = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include', // Pour inclure les cookies
-      })
-      if (!response.ok) {
-        throw new Error('Erreur lors de la déconnexion')
-      }
-      isAuthenticated.value = false
-      window.location.href = '/login' // Redirige vers la page de connexion
-    } catch (e) {
-      console.error(e.message)
-    }
+const logout = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    if (!response.ok) throw new Error('Erreur lors de la déconnexion')
+    isAuthenticated.value = false
+    window.location.href = '/login'
+  } catch (e) {
+    console.error(e.message)
   }
+}
 
-
+const handleAuthClick = () => {
+  if (isAuthenticated.value) {
+    logout()
+  } else {
+    window.location.href = '/login'
+  }
+}
 </script>
